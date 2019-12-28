@@ -58,14 +58,6 @@
          :body    (-> (let [p (partial getparameter req)]
                         (str (json/write-str (addperson (p :firstname) (p :surname))))))})
 
-;new
-(defn cheese-handler [req]
-   (def str1 (json/read-str (slurp "resources/test.json")))
-   (println str1)
-           {:status  200
-         :headers {"Content-Type" "text/json"}
-         :body (json/write-str str1)}
-   )
 
 ; Our main routes
 (defroutes app-routes
@@ -74,7 +66,6 @@
   (GET "/hello" [] hello-name)
   (GET "/people" [] people-handler)
   (GET "/people/add" [] addperson-handler)
-  (GET "/cheese" [] cheese-handler)
   (route/not-found "Error, page not found!"))
 
 ; Our main entry function

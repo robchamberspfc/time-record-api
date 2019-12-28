@@ -8,24 +8,22 @@
             [clojure.data.json :as json])
   (:gen-class))
 
-; my people-collection mutable collection vector
-(def times-collection (atom []))
+;Define time-collection with existinf json
+(def times-collection (atom (json/read-str (slurp "resources/test.json"))))
 
-;Collection Helper functions to add a new person
+;Collection Helper functions to add a new block
 (defn addtime [time location date]
-  ; (def times (json/read-str (slurp "resources/test.json")))
   (swap! times-collection conj {:time time :location location :date date})
-  ; (swap! people-collection conj {:firstname (str/capitalize firstname) :surname (str/capitalize surname)}))
+  (spit "resources/test.json" (str (json/write-str @times-collection)))
   )
 
-
-; Simple Body Page
-(defn simple-body-page [req] ;(3)
+;Root page returning help
+(defn simple-body-page [req]
   {:status  200
    :headers {"Content-Type" "text/html"}
    :body    "Try '/times'"})
 
-;new
+;Returns a list of times from JSON
 (defn times-handler [req]
     (def times (json/read-str (slurp "resources/test.json")))
       {:status  200
@@ -33,31 +31,30 @@
          :body (json/write-str times)}
    )
 
+;Helper to get parameters
 (defn getparameter [req pname] (get (:params req) pname))
 
+;Add new times
 (defn new-times-handler [req]
+    (-> (let [p (partial getparameter req)]
+    (addtime (p :time) (p :location) (p :date))))
+    (def times (json/read-str (slurp "resources/test.json")))
   {:status  200
     :headers {"Content-Type" "text/json"}
-    :body    (-> (let [p (partial getparameter req)]
-                        (str (json/write-str (addtime (p :time) (p :location) (p :date))))))})
+    :body (json/write-str times)}
+  )
 
-; Our main routes
+;Routes
 (defroutes app-routes
   (GET "/" [] simple-body-page)
   (GET "/times" [] times-handler)
   (GET "/times/add" [] new-times-handler)
   (route/not-found "Error, page not found!"))
 
-; Our main entry function
 (defn -main
   "This is our main entry point"
   [& args]
   (let [port (Integer/parseInt (or (System/getenv "PORT") "3000"))]
-    ; Run the server with Ring.defaults middleware
     (server/run-server (wrap-defaults #'app-routes site-defaults) {:port port})
-    ; Run the server without ring defaults
-    ;(server/run-server #'app-routes {:port port})
     (println (str "Running webserver at http:/127.0.0.1:" port "/")))
-    
-    (let [times (json/read-str (slurp "resources/test.json"))]
-      (println times)))
+)

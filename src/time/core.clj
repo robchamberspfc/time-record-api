@@ -1,4 +1,4 @@
-(ns rest-demo.core
+(ns time.core
   (:require [org.httpkit.server :as server]
             [compojure.core :refer :all]
             [compojure.route :as route]

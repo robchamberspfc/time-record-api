@@ -1,32 +1,13 @@
-# rest-demo
+# Time sheet API
 
-FIXME: description
+Simple API to store time sheet info. Stores and returns date, location and time as JSON.
 
-## Installation
-
-Download from http://example.com/FIXME.
-
-## Usage
-
-FIXME: explanation
-
-    $ java -jar rest-demo-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
+Original turorial from - https://medium.com/swlh/building-a-rest-api-in-clojure-3a1e1ae096e
 
 ## Examples
 
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+  GET "/times"
+  GET "/times/add?time=time2&location=location2&date=date2"
 
 ## License
 

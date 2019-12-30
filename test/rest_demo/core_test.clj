@@ -1,4 +1,4 @@
-(ns rest-demo.core-test
+(ns time.core-test
   (:require [clojure.test :refer :all]
             [rest-demo.core :refer :all]))
 

@@ -18,6 +18,9 @@
   )
 
   (defn clear []
+  (defn now [] (new java.util.Date))
+  (println (.getTime(now)))
+  (spit (str "resources/backup/" (.getTime(now)) ".json") (str (json/write-str @times-collection)))
   (spit "resources/test.json" (str (json/write-str [])))
   (reset! times-collection (json/read-str (slurp "resources/test.json")))
   )

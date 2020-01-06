@@ -8,58 +8,54 @@
             [clojure.data.json :as json])
   (:gen-class))
 
-;Define time-collection with existinf json
-(def times-collection (atom (json/read-str (slurp "resources/test.json"))))
+;define time-collection with existinf json
+(def times-collection (atom (json/read-str (slurp "resources/times.json"))))
 
-;Collection Helper functions to add a new block
+;time helper functions to add a new block to data
 (defn addtime [time location date]
   (swap! times-collection conj {:time time :location location :date date})
-  (spit "resources/test.json" (str (json/write-str @times-collection)))
-  )
+  (spit "resources/times.json" (str (json/write-str @times-collection))))
 
-  (defn clear []
+;clear helper to overwrite times.json and store old version in backup
+(defn clear []
   (defn now [] (new java.util.Date))
-  (println (.getTime(now)))
-  (spit (str "resources/backup/" (.getTime(now)) ".json") (str (json/write-str @times-collection)))
-  (spit "resources/test.json" (str (json/write-str [])))
-  (reset! times-collection (json/read-str (slurp "resources/test.json")))
-  )
+    (spit (str "resources/backup/" (.getTime(now)) ".json") (str (json/write-str @times-collection)))
+    (spit "resources/times.json" (str (json/write-str [])))
+    (reset! times-collection (json/read-str (slurp "resources/times.json"))))
 
-;Root page returning help
+;root page returning help
 (defn simple-body-page [req]
   {:status  200
    :headers {"Content-Type" "text/html", "access-control-allow-origin" "*", "access-control-allow-methods" "get" }
    :body    "Try '/times'"})
 
-;Returns a list of times from JSON
+;returns a list of times from JSON
 (defn times-handler [req]
-    (def times (json/read-str (slurp "resources/test.json")))
-      {:status  200
-         :headers {"Content-Type" "text/json", "access-control-allow-origin" "*", "access-control-allow-methods" "get"}
-         :body (json/write-str times)}
-   )
+  (def times (json/read-str (slurp "resources/times.json")))
+    {:status  200
+        :headers {"Content-Type" "text/json", "access-control-allow-origin" "*", "access-control-allow-methods" "get"}
+        :body (json/write-str times)})
 
-;Helper to get parameters
+;helper to get parameters
 (defn getparameter [req pname] (get (:params req) pname))
 
-;Add new times
+;add new times
 (defn new-times-handler [req]
-    (-> (let [p (partial getparameter req)]
-    (addtime (p :time) (p :location) (p :date))))
-    (def times (json/read-str (slurp "resources/test.json")))
-  {:status  200
-    :headers {"Content-Type" "text/json", "access-control-allow-origin" "*", "access-control-allow-methods" "get"}
-    :body (json/write-str times)}
-  )
+  (-> (let [p (partial getparameter req)]
+  (addtime (p :time) (p :location) (p :date))))
+  (def times (json/read-str (slurp "resources/times.json")))
+    {:status  200
+      :headers {"Content-Type" "text/json", "access-control-allow-origin" "*", "access-control-allow-methods" "get"}
+      :body (json/write-str times)})
 
-  (defn clear-handler [req]
-    (clear)
-  {:status  200
-    :headers {"Content-Type" "text/html", "access-control-allow-origin" "*", "access-control-allow-methods" "get"}
-    :body "Cleared!"}
-  )
+;clear everything and store old in backup directory
+(defn clear-handler [req]
+  (clear)
+    {:status  200
+      :headers {"Content-Type" "text/html", "access-control-allow-origin" "*", "access-control-allow-methods" "get"}
+      :body "Cleared!"})
 
-;Routes
+;routes
 (defroutes app-routes
   (GET "/" [] simple-body-page)
   (GET "/times" [] times-handler)
@@ -68,9 +64,8 @@
   (route/not-found "Error, page not found!"))
 
 (defn -main
-  "This is our main entry point"
+  ; "This is our main entry point"
   [& args]
   (let [port (Integer/parseInt (or (System/getenv "PORT") "4000"))]
     (server/run-server (wrap-defaults #'app-routes site-defaults) {:port port})
-    (println (str "Running webserver at http:/127.0.0.1:" port "/")))
-)
+    (println (str "Running webserver at http:/127.0.0.1:" port "/"))))

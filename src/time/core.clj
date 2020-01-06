@@ -12,8 +12,8 @@
 (def times-collection (atom (json/read-str (slurp "resources/times.json"))))
 
 ;time helper functions to add a new block to data
-(defn addtime [time location date]
-  (swap! times-collection conj {:time time :location location :date date})
+(defn addtime [time longitude latitude date]
+  (swap! times-collection conj {:time time :longitude longitude :latitude latitude :date date})
   (spit "resources/times.json" (str (json/write-str @times-collection))))
 
 ;clear helper to overwrite times.json and store old version in backup
@@ -42,7 +42,7 @@
 ;add new times
 (defn new-times-handler [req]
   (-> (let [p (partial getparameter req)]
-  (addtime (p :time) (p :location) (p :date))))
+  (addtime (p :time) (p :longitude) (p :latitude) (p :date))))
   (def times (json/read-str (slurp "resources/times.json")))
     {:status  200
       :headers {"Content-Type" "text/json", "access-control-allow-origin" "*", "access-control-allow-methods" "get"}

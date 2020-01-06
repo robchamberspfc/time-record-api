@@ -6,11 +6,11 @@ Original turorial from - https://medium.com/swlh/building-a-rest-api-in-clojure-
 
 ## Examples
 
- `GET "/times"` Show stored data
+ ```GET "/times"``` Show stored data
 
- `GET "/times/add?time=time2&location=location2&date=date2"` Add new data
+ ```GET "/times/add?time=time2&latitude=location2&longitude=location2&date=date2"``` Add new data
  
- `GET "/clear"` Clear all data
+ ```GET "/clear"``` Clear all data
 
 ## License
 
